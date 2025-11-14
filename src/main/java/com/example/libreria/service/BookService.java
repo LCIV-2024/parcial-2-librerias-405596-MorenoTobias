@@ -102,6 +102,19 @@ public class BookService {
         bookRepository.save(book);
     }
     
+    @Transactional(readOnly = true)
+    public Book getBookEntityByExternalId(Long externalId) {
+        return bookRepository.findByExternalId(externalId)
+                .orElseThrow(() -> new RuntimeException("Libro no encontrado con ID externo: " + externalId));
+    }
+    
+    @Transactional(readOnly = true)
+    public boolean isBookAvailable(Long externalId) {
+        Book book = bookRepository.findByExternalId(externalId)
+                .orElseThrow(() -> new RuntimeException("Libro no encontrado con ID externo: " + externalId));
+        return book.getAvailableQuantity() > 0;
+    }
+    
     private Book convertToBook(ExternalBookDTO dto) {
         Book book = new Book();
         book.setExternalId(dto.getId());
